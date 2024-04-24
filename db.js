@@ -16,18 +16,4 @@ console.log('Connected to the DB with id ' + connection.threadId);
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 module.exports = connection;
