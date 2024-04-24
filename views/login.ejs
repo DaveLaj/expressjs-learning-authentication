@@ -1,7 +1,6 @@
 <%- include('head', { title: 'Authentication Example' }) -%>
 
 <h1>Login</h1>
-Try accessing <a href="/restricted">/restricted</a>, then authenticate with "tj" and "foobar".
 
 <form method="post" action="/login">
   <p>
@@ -16,5 +15,8 @@ Try accessing <a href="/restricted">/restricted</a>, then authenticate with "tj"
     <input type="submit" value="Login">
   </p>
 </form>
+<p>Create an account. <a href="/auth/registration">Register</a></p>
+
+
 
 <%- include('foot') -%>

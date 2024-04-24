@@ -1,4 +1,4 @@
-const db = require('../../db'); // adjust the path according to your project structure
+const db = require('../../db');
 const bcrypt = require('bcrypt');
 var mysql = require('mysql');
 
@@ -19,6 +19,9 @@ exports.register = async(req, res) => {
     if (!req.body.email || !req.body.username || !req.body.password || !req.body.confirmPassword|| !req.body.user_type_id) {
         return res.status(400).send({ message: 'All fields are required' });
     }
+
+    
+
     // check if email is valid
     if (!/\S+@\S+\.\S+/.test(req.body.email)) {
         return res.status(400).send({ message: 'Invalid email address' });
@@ -35,31 +38,39 @@ exports.register = async(req, res) => {
 
 
 
-    // Define user roles
+    // Define user roles and assign user_type_id into INT
     const roles = Object.freeze({
         "ADMIN": 1,
         "USER": 2
     })
+    user_type_id = roles[req.body.user_type_id]
 
     // Establish connection to database
-    var con=mysql.createConnection({
-        host: "localhost",
-        user: "root",
-        password: "",
-        database: "auth"
-    })
-    user_type_id = roles[req.body.user_type_id]
+    // var con=mysql.createConnection({
+    //     host: "localhost",
+    //     user: "root",
+    //     password: "",
+    //     database: "auth"
+    // })
     // Process to insert data into the database
-    con.connect(function(err){
-        if(err) throw err;
-        console.log("Connected");
-        var sql="INSERT INTO users (email, name, password, user_type_id) VALUES ('"+req.body.email+"', '"+req.body.username+"', '"+hasPassword+"', '"+user_type_id+"')";
-        con.query(sql, function(err, result){
-            if(err) throw err;
-            console.log("1 record inserted");
-        })
-    })
+    var sql="INSERT INTO users (email, name, password, user_type_id, created_at) VALUES ('"+req.body.email+"', '"+req.body.username+"', '"+hasPassword+"', '"+user_type_id+"', NOW())";
+    
+    db.query(sql, (error, results, fields) => {
+        if (error) {
+          console.error('An error occurred while executing the query: ' + error.stack);
+          return;
+        }
+        console.log("1 record inserted");
+    });
 };
+
+exports.showRegistration = function (req, res){
+    res.render('register');
+}
+
+exports.showLogin = function (req, res){
+    res.render('login');
+}
 
 
 

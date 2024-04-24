@@ -2,9 +2,6 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-var router = require('./routes/index');
-
-
 
 // specify engine and view folder
 app.set('views', path.join(__dirname, 'views'));
@@ -15,7 +12,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // use the router
-app.use('/', router);  
+// app.use('/post', require('./routes/post'));  
+app.use('/auth', require('./routes/auth'));
+
+// landing page
+app.get('/', (req, res) => {
+    res.render('index');
+});
 
 // specify the port
 const port = 3000;
