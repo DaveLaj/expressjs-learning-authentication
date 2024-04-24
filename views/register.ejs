@@ -1,0 +1,25 @@
+<%- include('head', { title: 'Registration Example' }) -%>
+
+<h1>Register</h1>
+
+<form method="post" action="/register">
+  <p>
+    <label for="email">Email:</label>
+    <input type="text" name="email" id="email">
+  </p>
+  <p>
+    <label for="password">Password:</label>
+    <input type="password" name="password" id="password">
+  </p>
+  <p>
+    <label for="password2">Confirm Password:</label>
+    <input type="password" name="password2" id="password2">
+  </p>
+
+  
+  <p>
+    <input type="submit" value="Login">
+  </p>
+</form>
+
+<%- include('foot') -%>
