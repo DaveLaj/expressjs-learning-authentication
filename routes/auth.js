@@ -13,8 +13,10 @@ auth.post('/registration/register', function (req, res){
 
 
 // show login form
-auth.get('/login', userController.showLogin)
+auth.get('/loginpage', userController.showLogin)
 // process login form
-// router.post('/login', userController.login);
+auth.post('/loginpage/login', function (req, res){
+    userController.login(req, res)
+});
 
 module.exports = auth;

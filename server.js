@@ -2,7 +2,7 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-
+const session = require('express-session');
 // specify engine and view folder
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -11,8 +11,16 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Session Middleware
+app.use(session({
+    secret: 'your secret key',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: true }
+}));
+
 // use the router
-// app.use('/post', require('./routes/post'));  
+app.use('/board', require('./routes/board'));
 app.use('/auth', require('./routes/auth'));
 
 // landing page
