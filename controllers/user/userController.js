@@ -16,7 +16,11 @@ exports.register = async(req, res) => {
 
 
     // check if email is valid
-    emailValid(req.body.email)
+    if (!(await emailValid(req.body.email))) {
+        return res.status(400).send({ message: 'Email is not valid.' });
+    } else {
+        console.log('Email is valid');
+    }
 
     // check if email exists
     try {
@@ -61,12 +65,11 @@ exports.register = async(req, res) => {
     });
 };
 
-
 exports.login = async(req, res) => {
     
     // check if all fields are filled
     if (!req.body.email || !req.body.password) {
-        return res.message(400).send({ message: 'All fields are required' });
+        return res.status(400).send({ message: 'All fields are required' });
     }
     // check if email is valid
     try {
@@ -100,17 +103,20 @@ exports.login = async(req, res) => {
     // confirm if passwords match
     var isMatch = await bcrypt.compare(req.body.password, user[0].password);
     if (!isMatch){
-        return res.status(400).send({ message: 'Invalid password'})
+        return res.status(400).send({ message: 'Invalid password'});
     }
     else {
         // create session if authenticated
-        
-        console.log(user[0].id);
-        req.session.user = user[0].id;
-        res.redirect('/board/page')
+        req.session.user = user[0];
+        req.session.save();
+        res.redirect('/board/page');
     }
 }
 
+exports.logout = function (req, res){
+    req.session.destroy();
+    res.redirect('/auth/loginpage');
+}
 
 exports.showRegistration = function (req, res){
     res.render('register');
@@ -139,9 +145,9 @@ emailExists = async function(email) {
 
 emailValid = async function(email) {
     if (!/\S+@\S+\.\S+/.test(email)) {
-        return false
+        return false;
     }
-    else return true
+    else return true;
 }
 
 

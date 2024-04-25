@@ -1,8 +1,9 @@
 <%- include('head', { title: 'Bulletin Board' }) -%>
 
 <h1>Protected Page</h1>
-<h1>Welcome to the Board { Name of person }</h1>
-<p>You have { number of posts }</p>
+<h1>Welcome to the Board <%= user %></h1>
+<p>You were born at </p>
+<p><a href='/auth/logout'>Logout</a></p>
 
 
 <%- include('foot') -%>

@@ -2,22 +2,21 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const session = require('express-session');
+const session = require('./middleware/session');
+const cookieParser = require('cookie-parser');
+
 // specify engine and view folder
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// Parsing middleware
+// Deploy the middleware
+// custom middleware
+
+// built-in middleware
+app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Session Middleware
-app.use(session({
-    secret: 'your secret key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: { secure: true }
-}));
+session(app);
 
 // use the router
 app.use('/board', require('./routes/board'));

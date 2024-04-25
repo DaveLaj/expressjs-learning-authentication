@@ -18,5 +18,6 @@ auth.get('/loginpage', userController.showLogin)
 auth.post('/loginpage/login', function (req, res){
     userController.login(req, res)
 });
-
+// logout
+auth.get('/logout', userController.logout)
 module.exports = auth;
