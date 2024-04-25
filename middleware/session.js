@@ -5,7 +5,8 @@ module.exports = function sessionMiddleware (app) {
         secret: 'your secret key',
         resave: false,
         saveUninitialized: true,
-        cookie: { secure: true }
+        // cookie: { secure: process.env.NODE_ENV === 'development'} to solve why it cant work in development
+        cookie: { secure: false }
     }));
 };
     

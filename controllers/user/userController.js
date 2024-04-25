@@ -107,7 +107,7 @@ exports.login = async(req, res) => {
     }
     else {
         // create session if authenticated
-        req.session.user = user[0];
+        await (req.session.user = user[0]);
         req.session.save();
         res.redirect('/board/page');
     }
@@ -143,6 +143,7 @@ emailExists = async function(email) {
     }
 }
 
+// checks if email is valid
 emailValid = async function(email) {
     if (!/\S+@\S+\.\S+/.test(email)) {
         return false;
