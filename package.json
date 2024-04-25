@@ -1,5 +1,5 @@
 {
-  "name": "authentication",
+  "name": "expressjs-learning-authentication",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
