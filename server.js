@@ -13,11 +13,10 @@ app.set('view engine', 'ejs');
 // custom middleware
 
 // built-in middleware
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 session(app);
-
 // use the router
 app.use('/board', require('./routes/board'));
 app.use('/auth', require('./routes/auth'));
