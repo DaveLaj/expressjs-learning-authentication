@@ -60,7 +60,7 @@ exports.register = async(req, res) => {
           console.error('An error occurred while inserting into database: ' + error.stack);
           return;
         }
-       
+        console.log('Successfully Registered')
         res.redirect('/auth/loginpage')
     });
 };
@@ -106,8 +106,6 @@ exports.login = async(req, res) => {
         return res.status(400).send({ message: 'Invalid password'});
     }
     else {
-
-
         // create payload
         let payload = { id: user[0].id };
         // Generate an access token
