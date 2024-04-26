@@ -4,8 +4,10 @@ db.query = util.promisify(db.query);
 
 // ---------------------------------------------------------------------------------------------------------------------
 
-exports.showBoard = function (req, res){
-    user = req.session.user;
-    res.render('board', { user: user });
+exports.showBoard = async function(req, res){
+    user_id = req.user.id;
+    var sql = "SELECT * FROM users WHERE id = '"+user_id+"' LIMIT 1";
+    results = await db.query(sql);
+    res.render('board', { user: results[0] });
 }
 

@@ -2,7 +2,7 @@ const db = require('../../db');
 const bcrypt = require('bcrypt');
 const util = require('util');
 db.query = util.promisify(db.query);
-
+const jwt = require('jsonwebtoken');
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -57,7 +57,7 @@ exports.register = async(req, res) => {
     
     db.query(sql, (error, results, fields) => {
         if (error) {
-          console.error('An error occurred while executing the query: ' + error.stack);
+          console.error('An error occurred while inserting into database: ' + error.stack);
           return;
         }
        
@@ -106,15 +106,21 @@ exports.login = async(req, res) => {
         return res.status(400).send({ message: 'Invalid password'});
     }
     else {
-        // create session if authenticated
-        await (req.session.user = user[0]);
-        req.session.save();
+
+
+        // create payload
+        let payload = { id: user[0].id };
+        // Generate an access token
+        const testtoken = jwt.sign(payload, "secret", { expiresIn: '1h' });
+        // store token in cookie
+        res.cookie('token', testtoken, { httpOnly: true });
         res.redirect('/board/page');
     }
 }
 
 exports.logout = function (req, res){
-    req.session.destroy();
+    res.clearCookie('token');
+    console.log('Logged out');
     res.redirect('/auth/loginpage');
 }
 
@@ -145,10 +151,15 @@ emailExists = async function(email) {
 
 // checks if email is valid
 emailValid = async function(email) {
-    if (!/\S+@\S+\.\S+/.test(email)) {
-        return false;
+    try{
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            return false;
+        }
+        else return true;
+    } catch (error) {
+        console.error('An error occurred while verifying the email: ' + error.stack);
+        throw error; // re-throw the error so it can be caught and handled by the caller
     }
-    else return true;
 }
 
 

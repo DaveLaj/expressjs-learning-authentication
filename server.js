@@ -2,9 +2,8 @@
 const express = require('express');
 const app = express();
 const path = require('path');
-const session = require('./middleware/session');
 const cookieParser = require('cookie-parser');
-
+const restrict = require('./middleware/restrict');
 // specify engine and view folder
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -16,7 +15,7 @@ app.set('view engine', 'ejs');
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-session(app);
+
 // use the router
 app.use('/board', require('./routes/board'));
 app.use('/auth', require('./routes/auth'));
