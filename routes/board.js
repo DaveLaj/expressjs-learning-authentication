@@ -6,5 +6,4 @@ const boardController = require('../controllers/board/boardController');
 board.get('/', restrict.isUser, restrict.loggedIn, boardController.showBoard);
 
 
-
 module.exports = board;
