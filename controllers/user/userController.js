@@ -8,114 +8,105 @@ db.query = util.promisify(db.query);
 // ---------------------------------------------------------------------------------------------------------------------
 
 exports.register = async(req, res) => {
-
-    // check if all fields are filled
-    if (!req.body.email || !req.body.username || !req.body.password || !req.body.confirmPassword|| !req.body.user_type_id) {
-        return res.status(400).send({ message: 'All fields are required' });
-    }
-
-
-    // check if email is valid
-    if (!(await emailValid(req.body.email))) {
-        return res.status(400).send({ message: 'Email is not valid.' });
-    } else {
-        console.log('Email is valid');
-    }
-
     // check if email exists
     try {
+        // check if all fields are filled
+        if (!req.body.email || !req.body.username || !req.body.password || !req.body.confirmPassword|| !req.body.user_type_id) {
+            return res.status(400).send({ message: 'All fields are required' });
+        }
+        // check if email is valid
+        if (!(await emailValid(req.body.email))) {
+            return res.status(400).send({ message: 'Email is not valid.' });
+        } else {
+            console.log('Email is valid');
+        }
         const exists = await emailExists(req.body.email);
         if (exists) {
             return res.status(400).send({ message: 'Email Already Exists' });
         } else {
             console.log('Email does not exist');
         }
-    } catch (error) {
+         // confirm if passwords match
+        if (req.body.password !== req.body.confirmPassword) {
+            return res.status(400).send({ message: 'Passwords do not match' });
+        }
+
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hasPassword = await bcrypt.hash(req.body.password, salt);
+        
+
+
+        // Define user roles and assign user_type_id into INT
+        const roles = Object.freeze({
+            "ADMIN": 1,
+            "USER": 2
+        })
+        user_type_id = roles[req.body.user_type_id]
+
+        // Process to insert data into the database
+        var sql="INSERT INTO users (email, name, password, user_type_id, created_at) VALUES ('"+req.body.email+"', '"+req.body.username+"', '"+hasPassword+"', '"+user_type_id+"', NOW())";
+        
+        db.query(sql, (error, results, fields) => {
+            if (error) {
+            console.error('An error occurred while executing the query: ' + error.stack);
+            return;
+            }
+            res.redirect('/auth/login')
+        });
+    }
+    catch (error) {
         console.error('An error occurred: ' + error.stack);
     }
-    // confirm if passwords match
-    if (req.body.password !== req.body.confirmPassword) {
-        return res.status(400).send({ message: 'Passwords do not match' });
-    }
-
-
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hasPassword = await bcrypt.hash(req.body.password, salt);
-    
-
-
-    // Define user roles and assign user_type_id into INT
-    const roles = Object.freeze({
-        "ADMIN": 1,
-        "USER": 2
-    })
-    user_type_id = roles[req.body.user_type_id]
-
-    // Process to insert data into the database
-    var sql="INSERT INTO users (email, name, password, user_type_id, created_at) VALUES ('"+req.body.email+"', '"+req.body.username+"', '"+hasPassword+"', '"+user_type_id+"', NOW())";
-    
-    db.query(sql, (error, results, fields) => {
-        if (error) {
-          console.error('An error occurred while executing the query: ' + error.stack);
-          return;
-        }
-       
-        res.redirect('/auth/loginpage')
-    });
+   
 };
 
 exports.login = async(req, res) => {
     
-    // check if all fields are filled
-    if (!req.body.email || !req.body.password) {
-        return res.status(400).send({ message: 'All fields are required' });
-    }
-    // check if email is valid
     try {
+        // check if all fields are filled
+        if (!req.body.email || !req.body.password) {
+            return res.status(400).send({ message: 'All fields are required' });
+        }
+        // check if email is valid
         const valid = await emailValid(req.body.email);
         if (!valid) {
             return res.status(400).send({ message: 'Email is not valid.' });
         } else {
             console.log('Email is valid');
         }
-    }
-    catch (error) {
-        console.error('An error occurred: ' + error.stack);
-    }
-    // check if email exists
-    try {
+        // check if email exists
         const exists = await emailExists(req.body.email);
         if (!exists) {
             return res.status(400).send({ message: 'Email does not exist' });
         } else {
             console.log('Email exists');
         }
+        // get user details
+        var sql = "SELECT * FROM users WHERE email = '"+req.body.email+"' LIMIT 1";
+        const user = await db.query(sql);
+        
+        // confirm if passwords match
+        var isMatch = await bcrypt.compare(req.body.password, user[0].password);
+        if (!isMatch){
+            return res.status(400).send({ message: 'Invalid password'});
+        }
+        else {
+            // create session if authenticated
+            await (req.session.user = user[0]);
+            req.session.save();
+            res.redirect('/board/');
+        }
     }
     catch (error) {
         console.error('An error occurred: ' + error.stack);
-    }
-
-    // get user details
-    var sql = "SELECT * FROM users WHERE email = '"+req.body.email+"' LIMIT 1";
-    const user = await db.query(sql);
-    
-    // confirm if passwords match
-    var isMatch = await bcrypt.compare(req.body.password, user[0].password);
-    if (!isMatch){
-        return res.status(400).send({ message: 'Invalid password'});
-    }
-    else {
-        // create session if authenticated
-        await (req.session.user = user[0]);
-        req.session.save();
-        res.redirect('/board/page');
     }
 }
 
 exports.logout = function (req, res){
     req.session.destroy();
-    res.redirect('/auth/loginpage');
+    res.redirect('/auth/login');
 }
 
 exports.showRegistration = function (req, res){
