@@ -1,14 +1,7 @@
 // function to protect routes from unauthorized access
 const jwt = require('jsonwebtoken');
 const db = require('../db');
-// function to query user data from the database
 
-function userquery(user_id) {
-    var sql = "SELECT * FROM users WHERE id = '"+user_id+"' LIMIT 1";
-    results = db.query(sql);
-    results = results[0];
-    return results;
-}
 
 //  async function to verify token
 // function verifyToken(token) {
@@ -54,8 +47,8 @@ function loggedIn(req, res, next) {
 function isAdmin(req, res, next) {
     if (req.cookies.token) {
         req.user = verifyToken(req.cookies.token);
-        results = userquery(req.user.id);
-        if (results.user_type_id == 1){ // 2 corresponds to admin user type
+        if (req.user.user_type_id == 1){ // 1 corresponds to admin user type
+            console.log('User is an admin');
             next();
         }
         else {
@@ -68,9 +61,6 @@ function isAdmin(req, res, next) {
         res.redirect('/auth/loginpage');
     }
 }
-
-
-
 
 
 module.exports = { loggedIn, isAdmin };

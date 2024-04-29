@@ -107,7 +107,7 @@ exports.login = async(req, res) => {
     }
     else {
         // create payload
-        let payload = { id: user[0].id };
+        let payload = { id: user[0].id, user_type_id: user[0].user_type_id };
         // Generate an access token
         const testtoken = jwt.sign(payload, "secret", { expiresIn: '1h' });
         // store token in cookie

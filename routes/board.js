@@ -4,6 +4,6 @@ const restrict = require('../middleware/restrict');
 const boardController = require('../controllers/board/boardController');
 
 
-board.get('/page', restrict.loggedIn, boardController.showBoard);
+board.get('/page', restrict.loggedIn, restrict.isAdmin, boardController.showBoard);
 
 module.exports = board;
