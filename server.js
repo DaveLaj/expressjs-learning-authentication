@@ -32,6 +32,12 @@ app.get('/', (req, res) => {
     res.render('index');
 });
 
+// health check route
+app.get('/_health', (req, res) => {
+    res.status(200).send('ok')
+})
+
+
 // specify the port
 const port = 3000;
 // listen to the port
