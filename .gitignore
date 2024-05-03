@@ -1,2 +1,5 @@
 # bruno files
 bruno/
+tests/
+/.env
+node_modules/

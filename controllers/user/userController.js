@@ -4,7 +4,6 @@ const util = require('util');
 db.query = util.promisify(db.query);
 
 
-
 // ---------------------------------------------------------------------------------------------------------------------
 
 exports.register = async(req, res) => {
@@ -25,7 +24,10 @@ exports.register = async(req, res) => {
     user_type_id = roles[req.body.user_type_id]
 
     // Process to insert data into the database
-    var sql="INSERT INTO users (email, name, password, user_type_id, created_at) VALUES ('"+req.body.email+"', '"+req.body.username+"', '"+hasPassword+"', '"+user_type_id+"', NOW())";
+    // Define SQL query with method to avoid injection
+    var sql = "INSERT INTO users (email, name, password, user_type_id, created_at) VALUES (?, ?, ?, ?, NOW())";
+    var inserts = [req.body.email, req.body.username, hasPassword, user_type_id];
+    sql = mysql.format(sql, inserts);    
     try {
         insert = await db.query(sql);
         console.log('User registered successfully');
@@ -38,7 +40,6 @@ exports.register = async(req, res) => {
 };
 
 exports.login = async(req, res) => {
-
     // get user details
     var sql = "SELECT * FROM users WHERE email = '"+req.body.email+"' LIMIT 1";
     try {

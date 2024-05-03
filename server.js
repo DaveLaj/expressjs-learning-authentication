@@ -1,13 +1,14 @@
 // Description: Main entry point for the application.
+require('dotenv').config();
+console.log(process.env);
 const express = require('express');
 const app = express();
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 // specify engine and view folder
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
-
+app.set('views', path.join(__dirname, 'views'));    
+app.set('view engine', 'ejs'); 
 
 // Deploy the middleware
 // custom middleware
@@ -20,7 +21,7 @@ app.use(session({
     secret: 'your secret key',
     resave: false,
     saveUninitialized: true,
-    // cookie: { secure: process.env.NODE_ENV === 'development'} to solve why it cant work in development
+    // cookie: { secure: process.env.NODE_ENV === 'development'} to solve why it cant work in development --RE: setup env first
     cookie: { secure: false }
 }));
 // use the router
