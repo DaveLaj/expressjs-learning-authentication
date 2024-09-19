@@ -3,3 +3,5 @@ bruno/
 tests/
 /.env
 node_modules/
+mochawesome-report/
+.vscode

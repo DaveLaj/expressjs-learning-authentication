@@ -1,6 +1,4 @@
-const db = require('../../../db');
-const util = require('util');
-db.query = util.promisify(db.query);
+const dbPool = require('../../../db');
 
 class EmailAlreadyExists extends Error {
     constructor(message) {
@@ -12,17 +10,20 @@ class EmailAlreadyExists extends Error {
 }
 
 
-module.exports = function (req, res, next) {
-    sql = 'SELECT COUNT(*) AS count FROM users WHERE email = ?';
-    db.query(sql, [req.body.email]).then(results => {
-        results = results[0]['count'] > 0;
-        if (results>0){
+module.exports = async (req, res, next) => {
+    try {
+        sql = 'SELECT COUNT(*) AS count FROM users WHERE email = ?';
+        const results = await dbPool.execute(sql, [req.body.email])
+
+        const rowCount = results[0]['count'] > 0;
+        if (rowCount > 0){
             console.log(new EmailAlreadyExists('Email already exists'));
             return res.status(400).send('Email already exists');
         }
+
         else next();
-    }).catch(err => {
+    } catch (err) {
         console.error('An error occurred while executing the query: ' + err);  
         res.status(500).send('An error occurred while executing the query: ' + err);
-    })
+    }
 }

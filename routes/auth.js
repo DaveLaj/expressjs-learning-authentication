@@ -1,41 +1,21 @@
 var express = require('express');
 var auth = express.Router();
-// Import the controller
 const userController = require('../controllers/user/userController');
-
-
-
-// middleware
-
-// exclusive for login
 const login_isFilled = require('../middleware/user/login/isFilled');
-
-
-// exclusive for register
 const register_isFilled = require('../middleware/user/register/isFilled');
 const passwordValid = require('../middleware/user/register/passwordValid');
 const matchPassword = require('../middleware/user/register/matchPassword');
 
-// common middleware
+// commons
 const emailValid = require('../middleware/user/common/emailValid');
 const emailAlreadyExists = require('../middleware/user/register/emailAlreadyExists');
 const emailDoesNotExist = require('../middleware/user/login/emailDoesNotExist');
 
-// show registration form
 auth.get('/register',  userController.showRegistration);
-// process registration form
-auth.post('/register', register_isFilled, emailValid, emailAlreadyExists, passwordValid, matchPassword, function (req, res){
-    req.body.user_type_id = "USER";
-    userController.register(req, res)
-});
+auth.post('/register', register_isFilled, emailValid, emailAlreadyExists, passwordValid, matchPassword, userController.register);
 
-
-// show login form
 auth.get('/login', userController.showLogin)
-// process login form
-auth.post('/login', login_isFilled, emailDoesNotExist, function (req, res){
-    userController.login(req, res)
-});
-// logout
+auth.post('/login', login_isFilled, emailDoesNotExist, userController.login);
 auth.get('/logout', userController.logout)
+
 module.exports = auth;

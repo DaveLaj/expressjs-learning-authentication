@@ -1,6 +1,4 @@
-const db = require('../../../db');
-const util = require('util');
-db.query = util.promisify(db.query);
+const dbPool = require('../../../db');
 
 class EmailDoesNotExist extends Error {
     constructor(message) {
@@ -11,17 +9,18 @@ class EmailDoesNotExist extends Error {
     }
 }
 
-module.exports = function (req, res, next) {
-    sql = 'SELECT COUNT(*) AS count FROM users WHERE email = ?';
-    db.query(sql, [req.body.email]).then(results => {
-        results = results[0]['count'] > 0;
-        if (results == 0){
+module.exports = async function (req, res, next) {
+    try {
+        const sql = 'SELECT COUNT(*) AS count FROM users WHERE email = ?';
+        const results = await dbPool.execute(sql, [req.body.email])
+        const row = results[0]['count'] > 0; 
+        if (row){
             console.log(new EmailDoesNotExist('Email does not exist'));
             return res.status(400).send('Email does not exist');
         }
         else next();
-    }).catch(err => {
-        console.error('An error occurred while executing the query: ' + err);  
-        res.status(500).send('An error occurred while executing the query: ' + err);
-    })
+    } catch (err) {
+        console.error('An error occurred: ' + err);
+        return res.status(500).send({ message: 'An error occurred while checking email: ' + err });
+    }
 }

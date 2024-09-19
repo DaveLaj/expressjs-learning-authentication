@@ -1,47 +1,38 @@
 // Description: Main entry point for the application.
 require('dotenv').config();
-console.log(process.env);
 const express = require('express');
 const app = express();
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-// specify engine and view folder
-app.set('views', path.join(__dirname, 'views'));    
-app.set('view engine', 'ejs'); 
 
-// Deploy the middleware
-// custom middleware
+app.set('views', path.join(__dirname, 'views')); 
+app.set('view engine', 'ejs');
 
-// built-in middleware
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
-    secret: 'your secret key',
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    // cookie: { secure: process.env.NODE_ENV === 'development'} to solve why it cant work in development --RE: setup env first
-    cookie: { secure: false }
+    cookie: { secure: process.env.NODE_ENV === 'Development' ? false : true },
 }));
-// use the router
+
+// routes
 app.use('/board', require('./routes/board'));
 app.use('/auth', require('./routes/auth'));
 
-// landing page
 app.get('/', (req, res) => {
     res.render('index');
+    _ = req
 });
 
-// health check route
 app.get('/_health', (req, res) => {
     res.status(200).send('ok')
+    _ = req
 })
 
-
-// specify the port
-const port = 3000;
-// listen to the port
-app.listen(port, function(){console.log(`Server is running on port ${port}`)});
+app.listen(process.env.APP_PORT, function(){console.log(`Server is running on port http://localhost:${process.env.APP_PORT}`)});
 
 module.exports = app;
