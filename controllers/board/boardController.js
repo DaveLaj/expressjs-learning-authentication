@@ -1,15 +1,14 @@
-exports.showBoard = function (req, res){
-    user = req.session.user;
+exports.showBoard = async function (req, res){
+    const user = req.session.user;
     res.render('board', { user: user });
 }
 
 exports.showRandomPage = async function (req, res){
         setTimeout(() => {
-        num = req.body.num;
+        const num = req.body.num;
         if (!num) throw new ReferenceError('num is not defined');
         if (typeof(num) != 'number') throw new TypeError(`Expected a number, received a ${typeof(num)}`);  
-        result = num * num;
-        console.log(result);
+        const result = num * num;
         res.render('index');
     } , 1000);
 }

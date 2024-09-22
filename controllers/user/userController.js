@@ -46,23 +46,23 @@ exports.login = async(req, res) => {
     // get user details
     const sql = "SELECT * FROM users WHERE email = ? LIMIT 1";
     const sqlFormat = mysql.format(sql, [req.body.email]);
-
+    
     try {
         const user = await dbPool.execute(sqlFormat)
-
-        const isMatch = await bcrypt.compare(req.body.password, user[0].password);
+        const isMatch = await bcrypt.compare(req.body.password, user[0][0].password);
         if (!isMatch){
             return res.status(400).send({ message: 'Invalid password'});
         }
         else {
             // create session if authenticated
-            req.session.user = user[0];
+            req.session.user = user[0][0];
             req.session.save();
             res.redirect('/board/');
         }
     } catch(err) {
         console.error('An error occurred during login: ' + err);
         if (process.env.NODE_ENV === 'Development') {
+            console.log(err);
             return res.status(500).send({ message: 'An error occurred during login: ' + err });
         }
         return res.status(500).send({ message: 'An error occurred during login' });

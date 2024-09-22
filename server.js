@@ -1,4 +1,4 @@
-// Description: Main entry point for the application.
+// Main entry point for the application.
 require('dotenv').config();
 const express = require('express');
 const app = express();
@@ -34,5 +34,3 @@ app.get('/_health', (req, res) => {
 })
 
 app.listen(process.env.APP_PORT, function(){console.log(`Server is running on port http://localhost:${process.env.APP_PORT}`)});
-
-module.exports = app;
