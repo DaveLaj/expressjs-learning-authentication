@@ -17,18 +17,16 @@ This is a simple application that demonstrates how to implement authentication i
 
 ## Installation
 
-```terminal
-npm install (Install all the dependencies)
+```bash
+npm install // Install all the dependencies
 ```
 
 ## How to run
 
-```terminal
-npm start (Start the server)
+```bash
+npm start // Start the server
 ```
 
 ## URL to open
 
-```URL
-http://localhost:3000
-```
+`http://localhost:3000`
